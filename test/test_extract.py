@@ -199,7 +199,7 @@ def test_run_extract_data_preparation_integration(extractor, spark, tmp_path):
         )
 
     # Run the complete pipeline
-    result_df = extractor.run_extract_data_preparation(
+    result_df = extractor.run_extract_data_preparation_file(
         "products_uuid.csv", str(tmp_path)
         )
 

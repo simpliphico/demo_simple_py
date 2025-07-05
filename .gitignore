@@ -1,3 +1,7 @@
 __pycache__/
 **/*cache*/**
 *.egg-info/
+
+# Salidas del proceso
+data/output/
+output/

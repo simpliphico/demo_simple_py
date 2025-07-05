@@ -15,7 +15,7 @@ files_metadata = [
         ],
     },
     {
-        "filename": "store_uuid.csv",
+        "filename": "stores_uuid.csv",
         "folder": "data/input",
         "columns": [
             {"name": "store_id", "type": "string"},
@@ -56,17 +56,29 @@ class Extractor:
                 return file
         raise ValueError(f"File not found: {filename}")
 
+    def get_file_list(self) -> list[str]:
+        filenames = [file["filename"] for file in files_metadata]
+        return filenames
+
+    def get_metadata_file_folder(self, filename: str) -> str:
+        for file in files_metadata:
+            if file["filename"] == filename:
+                folder = file["folder"]
+                return folder
+        raise ValueError(f"File not found: {filename}")
+
     def format_date(self, column_name: Column) -> Column:
         formats_list = [
             "yyyy/MM/dd", "yy/MM/dd", "yyyy-MM-dd",
             "MM/dd/yyyy", "dd-MM-yyyy", "MM-dd-yyyy", "MMMM dd, yyyy"
-            ]
+        ]
         try:
-            return coalesce(*[to_date(column_name, format) for format in formats_list])
+            date_formats = [to_date(column_name, format) for format in formats_list]
+            return coalesce(*date_formats)
         except Exception as e:
             raise ValueError(
                 f"Invalid date format for column {column_name}: {str(e)}"
-                )
+            )
 
     def validate_and_clean_columns(self, df: DataFrame, filename: str) -> DataFrame:
         file_info = self.get_metadata_file(filename)
@@ -94,8 +106,8 @@ class Extractor:
         return df
 
     def check_missing_values(self, df: DataFrame) -> DataFrame:
-        return df.select([col(c).isNull().cast("int").alias(c) for c in df.columns]) \
-                 .groupBy().sum()
+        null_columns = [col(c).isNull().cast("int").alias(c) for c in df.columns]
+        return df.select(null_columns).groupBy().sum()
 
     def drop_duplicates(self, df: DataFrame) -> DataFrame:
         return df.dropDuplicates()
@@ -105,7 +117,9 @@ class Extractor:
         path = os.path.normpath(os.path.join(folder, filename))
         return path
 
-    def run_extract_data_preparation(self, filename: str, folder: str) -> DataFrame:
+    def run_extract_data_preparation_file(
+        self, filename: str, folder: str
+        ) -> DataFrame:
 
         file_path = self.generate_path(filename, folder)
 
@@ -127,3 +141,49 @@ class Extractor:
 
         self.logger.info("Pipeline completed.")
         return df
+
+def data_preparation(spark):
+    logger_prep = get_logger("data_preparation")
+    extractor = Extractor(spark)
+    logger_prep.info("Extractor initialized")
+
+    filenames = extractor.get_file_list()
+
+    try:
+        # Dictionary to store DataFrames with dynamic names
+        dataframes = {}
+
+        for filename in filenames:
+            folder = extractor.get_metadata_file_folder(filename)
+            logger_prep.info(
+                f"Starting processing of: {filename} located in {folder}"
+            )
+            df = extractor.run_extract_data_preparation_file(filename, folder)
+
+            # Create variable name based on filename without .csv extension
+            filename_without_extension = filename.replace('.csv', '')
+            df_variable_name = f"df_{filename_without_extension}"
+
+            # Store DataFrame in dictionary with the dynamic name
+            dataframes[df_variable_name] = df
+
+            logger_prep.info(f"Created DataFrame: {df_variable_name}")
+
+        # Extract DataFrames to individual variables
+        df_sales_uuid = dataframes.get('df_sales_uuid')
+        df_sales_uuid.show()
+        df_products_uuid = dataframes.get('df_products_uuid')
+        df_products_uuid.show()
+        df_store_uuid = dataframes.get('df_stores_uuid')
+        df_store_uuid.show()
+
+        logger_prep.info("Processing completed successfully")
+        logger_prep.info(
+            f"Available DataFrames: {list(dataframes.keys())}"
+        )
+
+    except Exception as e:
+        logger_prep.error(f"Error during processing: {str(e)}")
+        raise
+
+
