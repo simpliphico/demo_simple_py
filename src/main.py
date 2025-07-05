@@ -6,24 +6,24 @@ import logging
 def main():
     logger = setup_logger("main", level=logging.INFO)
     spark = SparkSession.builder.appName("ETLExample").getOrCreate()
-    logger.info("Spark session iniciada")
+    logger.info("Spark session started")
 
     extractor = Extractor(spark)
-    logger.info("Extractor inicializado")
+    logger.info("Extractor initialized")
 
     filename = "sales_uuid.csv"
     folder = "data/input"
-    logger.info(f"Iniciando procesamiento de: {filename} situado en {folder}")
+    logger.info(f"Starting processing of: {filename} located in {folder}")
 
     try:
         df = extractor.run_extract_data_preparation(filename, folder)
         df.show()
-        logger.info("Procesamiento completado exitosamente")
+        logger.info("Processing completed successfully")
     except Exception as e:
-        logger.error(f"Error durante el procesamiento: {str(e)}")
+        logger.error(f"Error during processing: {str(e)}")
         raise
     finally:
-        logger.info("Cerrando Spark session")
+        logger.info("Closing Spark session")
         spark.stop()
 
 if __name__ == "__main__":

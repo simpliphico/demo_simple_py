@@ -11,34 +11,34 @@ def setup_logger(
     log_file: str = "app.log"
 ) -> logging.Logger:
     """
-    Configura y retorna un logger personalizado para la aplicación.
+    Configures and returns a custom logger for the application.
 
     Args:
-        name: Nombre del logger
-        level: Nivel de logging (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        log_format: Formato personalizado para los mensajes
-        log_to_file: Si se debe escribir también a archivo
-        log_file: Nombre del archivo de log
+        name: Logger name
+        level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+        log_format: Custom format for messages
+        log_to_file: Whether to also write to file
+        log_file: Log file name
     Returns:
-        Logger configurado
+        Configured logger
     """
-    # Crear el logger
+    # Create logger
     logger = logging.getLogger(name)
     logger.setLevel(level)
 
-    # Evitar duplicar handlers si ya existe
+    # Avoid duplicating handlers if already exists
     if logger.handlers:
         return logger
-    # Formato por defecto
+    # Default format
     if log_format is None:
         log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     formatter = logging.Formatter(log_format)
-    # Handler para consola
+    # Console handler
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(level)
     console_handler.setFormatter(formatter)
     logger.addHandler(console_handler)
-    # Handler para archivo (opcional)
+    # File handler (optional)
     if log_to_file:
         file_handler = logging.FileHandler(log_file, encoding='utf-8')
         file_handler.setLevel(level)
@@ -49,17 +49,17 @@ def setup_logger(
 
 def get_logger(name: str = "demo_simple_py") -> logging.Logger:
     """
-    Obtiene un logger ya configurado o crea uno nuevo si no existe.
+    Gets an already configured logger or creates a new one if it doesn't exist.
 
     Args:
-        name: Nombre del logger
+        name: Logger name
 
     Returns:
-        Logger configurado
+        Configured logger
     """
     logger = logging.getLogger(name)
 
-    # Si el logger no tiene handlers, configurarlo
+    # If logger has no handlers, configure it
     if not logger.handlers:
         logger = setup_logger(name)
     return logger

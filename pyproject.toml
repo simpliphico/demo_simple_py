@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "etl-project"
 version = "0.1.0"
-description = "ETL en PySpark"
+description = "ETL in PySpark"
 readme = "README.md"
 requires-python = ">=3.8"
 authors = [
@@ -26,10 +26,10 @@ package-dir = {"" = "src"}
 where = ["src"]
 
 [tool.ruff]
-# Configuración de ruff
+# Ruff configuration
 line-length = 88
 select = ["E", "F", "W", "C90"]
-ignore = ["E203"]  # Quita W503 porque no existe en Ruff
+ignore = ["E203"]  # Remove W503 because it doesn't exist in Ruff
 exclude = [
   "src/etl_project.egg-info",
   "build",

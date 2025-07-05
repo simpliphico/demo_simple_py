@@ -34,7 +34,7 @@ jobs:
         pip install -e .
 
     - name: Run tests
-      run: pytest
+      run: pytest -v
 
     - name: Run main script
       run: python src/main.py

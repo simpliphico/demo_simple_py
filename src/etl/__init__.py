@@ -1,1 +1,1 @@
-# Este archivo hace que Python reconozca este directorio como un paquete
+# This file makes Python recognize this directory as a package

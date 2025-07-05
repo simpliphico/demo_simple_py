@@ -47,14 +47,14 @@ class Extractor:
         self, file_path: str,
         header: bool = True
     ) -> DataFrame:
-        """Carga un CSV usando el esquema especificado."""
+        """Loads a CSV file using the specified schema."""
         return self.spark.read.csv(file_path, header=header)
 
     def get_metadata_file(self, filename: str) -> dict:
         for file in files_metadata:
             if file["filename"] == filename:
                 return file
-        raise ValueError(f"Archivo no encontrado: {filename}")
+        raise ValueError(f"File not found: {filename}")
 
     def format_date(self, column_name: Column) -> Column:
         formats_list = [
@@ -65,7 +65,7 @@ class Extractor:
             return coalesce(*[to_date(column_name, format) for format in formats_list])
         except Exception as e:
             raise ValueError(
-                f"Formato de fecha no válido para la columna {column_name}: {str(e)}"
+                f"Invalid date format for column {column_name}: {str(e)}"
                 )
 
     def validate_and_clean_columns(self, df: DataFrame, filename: str) -> DataFrame:
@@ -73,7 +73,7 @@ class Extractor:
         for column in file_info["columns"]:
             if column["name"] not in df.columns:
                 raise ValueError(
-                    f"Column {column['name']} no encontrada en el archivo"
+                    f"Column {column['name']} not found in file"
                     )
             if column["type"] == "date":
                 df = df.withColumn(column["name"], self.format_date(column["name"]))
@@ -83,7 +83,7 @@ class Extractor:
                 df = df.withColumn(column["name"], col(column["name"]).cast("double"))
             else:
                 self.logger.info(
-                    f"No es necesario transformar la columna {column['name']}"
+                    f"No transformation needed for column {column['name']}"
                     )
         return df
 
@@ -101,7 +101,7 @@ class Extractor:
         return df.dropDuplicates()
 
     def generate_path(self, filename: str, folder: str) -> str:
-        """Devuelve la ruta completa del fichero combinando carpeta y nombre."""
+        """Returns the complete file path by combining folder and filename."""
         path = os.path.normpath(os.path.join(folder, filename))
         return path
 
@@ -109,21 +109,21 @@ class Extractor:
 
         file_path = self.generate_path(filename, folder)
 
-        self.logger.info(f"Cargando: {file_path}")
+        self.logger.info(f"Loading: {file_path}")
         df = self.load_csv(file_path)
 
-        self.logger.info("Limpiando nombres de columnas...")
+        self.logger.info("Cleaning column names...")
         df = self.clean_column_names(df)
 
-        self.logger.info("Validando y limpiando columnas...")
+        self.logger.info("Validating and cleaning columns...")
         df = self.validate_and_clean_columns(df, filename)
 
-        self.logger.info("Comprobando valores nulos...")
+        self.logger.info("Checking missing values...")
         nulls = self.check_missing_values(df)
         nulls.show()
 
-        self.logger.info("Eliminando duplicados...")
+        self.logger.info("Removing duplicates...")
         df = self.drop_duplicates(df)
 
-        self.logger.info("Pipeline terminado.")
+        self.logger.info("Pipeline completed.")
         return df
