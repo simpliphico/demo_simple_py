@@ -1,17 +1,36 @@
-from extract import load_products, load_sales, load_stores, init_spark, load_products_df, load_sales_df, load_stores_df
-from utils import load_config
+from pyspark.sql import SparkSession
+from etl.extract import Extractor
+from etl.utils import setup_logger
+import logging
 
-spark = init_spark()
+# Configurar logging
+logger = setup_logger("main", level=logging.INFO)
 
-config = load_config()
-input_path = config.get("input_path", "data/input")
+# Crear sesión de Spark
+spark = SparkSession.builder.appName("ETLExample").getOrCreate()
+logger.info("Spark session iniciada")
 
-#df_products = load_products(spark,input_path)
-#df_stores = load_stores(spark,input_path)
-#df_sales = load_sales(spark,input_path)
+# Crear extractor
+extractor = Extractor(spark)
+logger.info("Extractor inicializado")
 
-df_products2 = load_products_df(input_path)
-df_stores2 = load_stores_df(input_path)
-df_sales2 = load_sales_df(input_path)
+# Procesar archivo
+path = "data/input/sales_uuid.csv"
+logger.info(f"Iniciando procesamiento de: {path}")
+
+try:
+    df = extractor.run_extract_data_preparation(path)
+    logger.info("Procesamiento completado exitosamente")
+except Exception as e:
+    logger.error(f"Error durante el procesamiento: {str(e)}")
+    raise
+finally:
+    logger.info("Cerrando Spark session")
+    spark.stop()
+
+
+
+
+
 
 
