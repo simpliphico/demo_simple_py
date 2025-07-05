@@ -1,7 +1,7 @@
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.types import StructType, StringType, DoubleType, IntegerType, StructField, DateType
 from pyspark.sql.functions import col
-from src.etl.utils import get_logger
+from etl.utils import get_logger
 
 
 product_schema = StructType([

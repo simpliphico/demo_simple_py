@@ -1,7 +1,7 @@
 import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType
-from src.etl.extract import Extractor
+from etl.extract import Extractor
 from chispa import assert_df_equality
 
 

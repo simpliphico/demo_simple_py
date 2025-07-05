@@ -1,6 +1,6 @@
 from pyspark.sql import SparkSession
-from src.etl.extract import Extractor
-from src.etl.utils import setup_logger
+from etl.extract import Extractor
+from etl.utils import setup_logger
 import logging
 
 # Configurar logging

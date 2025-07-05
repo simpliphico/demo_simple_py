@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "etl-project"
+version = "0.1.0"
+description = "ETL en PySpark"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name="Eva González Marcote" }
+]
+dependencies = [
+  "pyspark==3.5.1",
+  "pytest>=7.0.0",
+  "chispa>=0.9.2",
+  "pandas",
+  "pyyaml"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
