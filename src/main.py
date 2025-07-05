@@ -11,11 +11,12 @@ def main():
     extractor = Extractor(spark)
     logger.info("Extractor inicializado")
 
-    path = "data/input/sales_uuid.csv"
-    logger.info(f"Iniciando procesamiento de: {path}")
+    filename = "sales_uuid.csv"
+    folder = "data/input"
+    logger.info(f"Iniciando procesamiento de: {filename} situado en {folder}")
 
     try:
-        df = extractor.run_extract_data_preparation(path)
+        df = extractor.run_extract_data_preparation(filename, folder)
         df.show()
         logger.info("Procesamiento completado exitosamente")
     except Exception as e:
