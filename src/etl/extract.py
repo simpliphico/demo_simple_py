@@ -1,5 +1,7 @@
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import StructType, StringType, DoubleType, IntegerType, StructField, DateType
+from pyspark.sql.types import (
+    StructType, StringType, DoubleType, IntegerType, StructField, DateType
+    )
 from pyspark.sql.functions import col
 from etl.utils import get_logger
 
@@ -31,7 +33,10 @@ class Extractor:
         self.spark = spark
         self.logger = get_logger("extractor")
 
-    def load_csv(self, file_path: str, schema: StructType, header: bool = True) -> DataFrame:
+    def load_csv(
+        self, file_path: str,
+        schema: StructType, header: bool = True
+    ) -> DataFrame:
         """Carga un CSV usando el esquema especificado."""
         return self.spark.read.csv(file_path, schema=schema, header=header)
 
@@ -68,10 +73,10 @@ class Extractor:
 
         self.logger.info("Comprobando valores nulos...")
         nulls = self.check_missing_values(df)
+        nulls.show()
 
         self.logger.info("Eliminando duplicados...")
         df = self.drop_duplicates(df)
 
         self.logger.info("Pipeline terminado.")
         return df
-    

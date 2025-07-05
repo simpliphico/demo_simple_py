@@ -24,3 +24,16 @@ package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.ruff]
+# Configuración de ruff
+line-length = 88
+select = ["E", "F", "W", "C90"]
+ignore = ["E203"]  # Quita W503 porque no existe en Ruff
+exclude = [
+  "src/etl_project.egg-info",
+  "build",
+  "dist",
+  ".venv",
+  "env"
+]
