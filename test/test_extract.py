@@ -76,10 +76,10 @@ def test_check_missing_values(extractor, spark):
     row = result_df.first().asDict()
 
     # Verificar conteo de valores nulos
-    assert row["transaction_id"] == 1  # 1 valor nulo
-    assert row["product_id"] == 1      # 1 valor nulo
-    assert row["store_id"] == 1        # 1 valor nulo
-    assert row["price"] == 1           # 1 valor nulo
+    assert row["sum(transaction_id)"] == 1  # 1 valor nulo
+    assert row["sum(product_id)"] == 1      # 1 valor nulo
+    assert row["sum(store_id)"] == 1        # 1 valor nulo
+    assert row["sum(price)"] == 1           # 1 valor nulo
 
 
 def test_drop_duplicates(extractor, spark):

@@ -73,7 +73,7 @@ class Extractor:
         for column in file_info["columns"]:
             if column["name"] not in df.columns:
                 raise ValueError(
-                    f"Columna {column['name']} no encontrada en el archivo"
+                    f"Column {column['name']} no encontrada en el archivo"
                     )
             if column["type"] == "date":
                 df = df.withColumn(column["name"], self.format_date(column["name"]))
